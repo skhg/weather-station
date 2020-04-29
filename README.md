@@ -10,7 +10,8 @@ For sensing environmental conditions
 * BME280 - temp/humidity/air pressure
 * SDS011 - air particulate (PM2.5 and PM10)
 * MH-RD - Rain sensor (https://www.amazon.de/-/en/AZDelivery-Rain-Sensor-Module-Parent/dp/B07V5QQW9J/ref=sr_1_9?dchild=1&keywords=arduino%2Bregensensor&qid=1588014518&sr=8-9&th=1)
-* Anemometer - 
+* Anemometer -
+* GY-8511 - Ultraviolet sensor (https://www.amazon.de/-/en/gp/product/B07PQPHJKR/ref=ppx_yo_dt_b_asin_title_o01_s00?ie=UTF8&psc=1)
 
 
 # References
