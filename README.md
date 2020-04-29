@@ -17,3 +17,4 @@ For sensing environmental conditions
 # References
 * https://hackaday.io/project/165061-solar-powered-wifi-weather-station-v20#j-discussions-title
 * https://www.geeky-gadgets.com/arduino-wind-speed-meter-anemometer-project-30032016/
+* https://learn.sparkfun.com/tutorials/ml8511-uv-sensor-hookup-guide/all
