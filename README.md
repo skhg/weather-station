@@ -20,3 +20,4 @@ For sensing environmental conditions
 * https://learn.sparkfun.com/tutorials/ml8511-uv-sensor-hookup-guide/all
 * https://gist.github.com/geoffwatts/b0b488b5a5257223ed53
 * https://sensor.community/en/sensors/
+* https://sensor.community/en/sensors/airrohr/
