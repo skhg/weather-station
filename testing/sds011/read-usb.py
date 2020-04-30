@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-# runs on Python 2. comes from https://gist.github.com/geoffwatts/b0b488b5a5257223ed53
+# runs on Python 2. comes from https://gist.github.com/geoffwatts/b0b488b5a5257223ed53 with corrections applied
 
 import serial, time, struct
 
@@ -21,7 +21,7 @@ while True:
     # We got a valid packet header
     if lastbyte == "\xAA" and byte == "\xC0":
         sentence = ser.read(size=8) # Read 8 more bytes
-        readings = struct.unpack('<hhxxcc',sentence) # Decode the packet - big endian, 2 shorts for pm2.5 and pm10, 2 reserved bytes, checksum, message tail
+        readings = struct.unpack('<hhxxcc',sentence) # Decode the packet - little endian, 2 shorts for pm2.5 and pm10, 2 reserved bytes, checksum, message tail
         
         pm_25 = readings[0]/10.0
         pm_10 = readings[1]/10.0
