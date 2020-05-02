@@ -22,3 +22,4 @@ For sensing environmental conditions
 * https://sensor.community/en/sensors/
 * https://sensor.community/en/sensors/airrohr/
 * https://learn.pimoroni.com/tutorial/sandyj/enviro-plus-and-luftdaten-air-quality-station
+* https://www.aeq-web.com/anemometer-mit-dem-arduino-bauen/
