@@ -1,7 +1,7 @@
 #include "SdsDustSensor.h"
 
-int rxPin = D1;
-int txPin = D2;
+int rxPin = D4;
+int txPin = D3;
 SdsDustSensor sds(rxPin, txPin);
 
 void setup() {

@@ -36,12 +36,28 @@
 
 //Hardware pin definitions
 int UVOUT = A0; //Output from the sensor
-int REF_3V3 = 14; //3.3V power on the Arduino board, and the D5 pin
+int REF_3V3 = 16; //3.3V power on the Arduino board, and the D0 pin
+
+#define MULTIPLEX_S0 14 // D5
+#define MULTIPLEX_S1 12 // D6
+#define MULTIPLEX_S2 13 // D7
+#define MULTIPLEX_S3 15 // D8
 
 void setup()
 {
   Serial.begin(9600);
 
+  pinMode(MULTIPLEX_S0, OUTPUT);
+  pinMode(MULTIPLEX_S1, OUTPUT);
+  pinMode(MULTIPLEX_S2, OUTPUT);
+  pinMode(MULTIPLEX_S3, OUTPUT);
+
+  //make input 0 active
+  digitalWrite(MULTIPLEX_S0, LOW);
+  digitalWrite(MULTIPLEX_S1, LOW);
+  digitalWrite(MULTIPLEX_S2, LOW);
+  digitalWrite(MULTIPLEX_S3, LOW);
+  
   pinMode(UVOUT, INPUT);
   pinMode(REF_3V3, INPUT);
 
@@ -59,10 +75,10 @@ void loop()
   //todo in_min and in_max should be configurable depending on sensor behaviour
   float uvIntensity = mapfloat(outputVoltage, 1.07, 2.8, 0.0, 15.0); //Convert the voltage to a UV intensity level
 
-  Serial.print("output: ");
+  Serial.print("refLevel: ");
   Serial.print(refLevel);
 
-  Serial.print("ML8511 output: ");
+  Serial.print(" ML8511 output: ");
   Serial.print(uvLevel);
 
   Serial.print(" / ML8511 voltage: ");

@@ -11,6 +11,13 @@ To test view the output, point a serial monitor such as Putty at your Arduino.
 
 */
 
+#define RAINFALL_IN A0
+
+#define MULTIPLEX_S0 14 // D5
+#define MULTIPLEX_S1 12 // D6
+#define MULTIPLEX_S2 13 // D7
+#define MULTIPLEX_S3 15 // D8
+
 // lowest and highest sensor readings:
 const int sensorMin = 0;     // sensor minimum
 const int sensorMax = 1024;  // sensor maximum
@@ -18,10 +25,22 @@ const int sensorMax = 1024;  // sensor maximum
 void setup() {
   // initialize serial communication @ 9600 baud:
   Serial.begin(9600);  
+
+  pinMode(MULTIPLEX_S0, OUTPUT);
+  pinMode(MULTIPLEX_S1, OUTPUT);
+  pinMode(MULTIPLEX_S2, OUTPUT);
+  pinMode(MULTIPLEX_S3, OUTPUT);
+
+  //make input 1 active
+  digitalWrite(MULTIPLEX_S0, HIGH);
+  digitalWrite(MULTIPLEX_S1, LOW);
+  digitalWrite(MULTIPLEX_S2, LOW);
+  digitalWrite(MULTIPLEX_S3, LOW);
+  
 }
 void loop() {
-  // read the sensor on analog A0:
-  int sensorReading = analogRead(A0);
+  // read the sensor:
+  int sensorReading = analogRead(RAINFALL_IN);
   // map the sensor range (four options):
   // ex: 'long int map(long int, long int, long int, long int, long int)'
   int range = map(sensorReading, sensorMin, sensorMax, 0, 3);
@@ -47,5 +66,5 @@ void loop() {
 
 
   
-  delay(1);  // delay between reads
+  delay(100);  // delay between reads
 }
