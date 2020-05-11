@@ -58,6 +58,8 @@ float ultravioletDarknessVoltage = 1.07;
 float ultravioletMaxVoltage = 2.8;
 float maxUltravioletIntensityLevelAtLocation = 8.0;
 int sdsInhalationSeconds = 30;
+int windMeasurementSeconds = 10;
+int cycleIntervalSeconds = 60;
 
 void setup(){
   Serial.begin(9600);
@@ -70,11 +72,12 @@ void setup(){
   connectToWifi();
   setupMultiplexer();
   setupInstruments();
+
+  Serial.println("Setup complete!");
+  Serial.println("");
 }
 
 void loop(){
-  unsigned long currentTime = millis();
-
   double temperature;
   double humidity;
   double pressure;
@@ -87,10 +90,25 @@ void loop(){
   double uvIntensity;
   getUvSensorData(&uvIntensity);
 
+  double windSpeed;
+  getWindSpeedKmPerHr(&windSpeed);
+  
   double pm25level;
   double pm10level;
   getParticulateData(&pm25level, &pm10level);
 
+  sendData(temperature, humidity, pressure, uvIntensity, rainfallLevel, windSpeed, pm25level, pm10level);
+  
+  sleepUntilNext();
+}
+
+void sleepUntilNext(){
+  Serial.println("Cycle complete.");
+  Serial.println("---");
+  Serial.println("Sleeping for " + String(cycleIntervalSeconds) + " seconds...");
+  Serial.println("");
+  
+  delay(cycleIntervalSeconds * 1000);
 }
 
 void setActiveMultiplexerChannel(int channelNum){
@@ -108,30 +126,59 @@ void setupMultiplexer(){
 }
 
 void setupInstruments(){
+  Serial.println("Setup BME280...");
   // Temp/humidity/pressure sensor
   bme.begin(0x76);
+  Serial.println("");
 
+  Serial.println("Setup SDS011...");
   // Dust sensor
   sds.begin();
   Serial.println(sds.queryFirmwareVersion().toString()); // prints firmware version
   Serial.println(sds.setQueryReportingMode().toString()); // ensures sensor is in 'query' reporting mode
+  sds.sleep();
+  Serial.println("");
+
+  
 }
 
 void getBme280data(double*temperature, double*pressure, double*humidity){
-  *temperature = bme.readTemperature();
-  *pressure = bme.readPressure();
-  *humidity = bme.readHumidity();
+  double liveTemp = bme.readTemperature();
+  double livePressure = bme.readPressure();
+  double liveHumidity = bme.readHumidity();
+
+  Serial.println("BME280");
+  Serial.println("---");
+  Serial.println("Temperature: " + String(liveTemp));
+  Serial.println("Pressure: " + String(livePressure));
+  Serial.println("Humidity: " + String(liveHumidity));
+  Serial.println("");
+  
+  *temperature = liveTemp;
+  *pressure = livePressure;
+  *humidity = liveHumidity;
 }
 
 void getRainfallData(double*rainfallPercentage){
   setActiveMultiplexerChannel(1);
-  int rawWetness = 1024 - analogRead(ANALOGUE_IN);
-  
+  int sensorReading = analogRead(ANALOGUE_IN);
+  int maxValue = 1024;
+  int rawWetness = maxValue - sensorReading;
   double rainPercent = mapDouble((double)rawWetness, 0.0, 1024.0, 0.0, 100.0);
+  
+  Serial.println("Rainfall Sensor");
+  Serial.println("---");
+  Serial.println("Sensor reading: " + String(sensorReading));
+  Serial.println("Wetness: " + String(rawWetness) + " / " + String(maxValue));
+  Serial.println("Wetness %: " + String(rainPercent));
+  Serial.println("");
+  
   *rainfallPercentage = rainPercent;
 }
 
 void getUvSensorData(double*uvIntensity){
+  Serial.println("ML8511");
+  Serial.println("---");
   setActiveMultiplexerChannel(0);
   int uvLevel = averageAnalogueRead(ANALOGUE_IN);
   int refLevel = averageAnalogueRead(REF_3V3);
@@ -139,16 +186,33 @@ void getUvSensorData(double*uvIntensity){
   double mapped = mapDouble(outputVoltage, ultravioletDarknessVoltage, ultravioletMaxVoltage, 0.0, maxUltravioletIntensityLevelAtLocation);
 
   *uvIntensity = mapped;
+
+  Serial.println("UV sensor level: " + String(uvLevel));
+  Serial.println("Reference level: " + String(refLevel));
+  Serial.println("Output voltage: " + String(outputVoltage));
+  Serial.println("UV Intensity (mW/cm^2): " + String(mapped));
+  Serial.println("");
 }
 
 void getParticulateData(double*pm25, double*pm10){
+  Serial.println("SDS011");
+  Serial.println("---");
+  Serial.println("Waking up...");
   sds.wakeup();
+  Serial.println("Inhaling for " + String(sdsInhalationSeconds) + " seconds...");
+  
   delay(sdsInhalationSeconds * 1000);
 
   PmResult pm = sds.queryPm();
   if (pm.isOk()) {
-    *pm25 = pm.pm25;
-    *pm10 = pm.pm10;
+    double newPm25 = pm.pm25;
+    double newPm10 = pm.pm10;
+
+    Serial.println("PM 2.5: " + String(newPm25));
+    Serial.println("PM 10: " + String(newPm10));
+    
+    *pm25 = newPm25;
+    *pm10 = newPm10;
   } else {
     Serial.print("Could not read values from sensor, reason: ");
     Serial.println(pm.statusToString());
@@ -157,26 +221,58 @@ void getParticulateData(double*pm25, double*pm10){
   WorkingStateResult state = sds.sleep();
   if (state.isWorking()) {
     Serial.println("Problem with sleeping the sensor.");
+  } else {
+    Serial.println("Asleep");
   }
+  Serial.println("");
 }
 
-void getWindSpeed(double*windSpeed){
+void getWindSpeedKmPerHr(double*windSpeed){
+  Serial.println("Anemometer");
+  Serial.println("---");
   setActiveMultiplexerChannel(2);
 
-  //todo get wind speed
-  *windSpeed = 2.2;
+  unsigned long startTime = millis();
+
+  Serial.println("Start time: " + String(startTime));
+  Serial.println("Measure for: " + String(windMeasurementSeconds) + " seconds...");
+  int currentState = map(analogRead(ANALOGUE_IN), 0, 1024, 0, 1);
+  int nextState = currentState;
+  int stateChangeCount = 0; // One state change corresponds to 1/4 rotation
+ 
+  while((unsigned long)(millis() - startTime) < windMeasurementSeconds * 1000) {
+    nextState = map(analogRead(ANALOGUE_IN), 0, 1024, 0, 1);
+    if(nextState != currentState){
+      stateChangeCount++;
+      currentState = nextState;
+    }
+    delay(1);
+    
+  }
+
+  Serial.println("End time: " + String(millis()));
+  Serial.println("Recorded: " + String(stateChangeCount) + " state changes (1/4 rotations)");
+
+  double windSpeedKmHr = (double)stateChangeCount / (double)windMeasurementSeconds * 1.2;
+
+  Serial.println("Wind Speed: " + String(windSpeedKmHr) + " km/hr");
+  Serial.println("");
+  
+  *windSpeed = windSpeedKmHr;
 }
 
 void sendData(double temperature, double humidity, double pressure, double uvIntensity, double rainfallLevel, double windSpeed, double pm25level, double pm10level){
   dataJson["temperatureC"] = temperature;
   dataJson["airPressurePa"] = pressure;
   dataJson["humidityPercentage"] = humidity;
-  dataJson["uvIntensity"] = uvIntensity;
-  dataJson["rainfall"] = rainfallLevel;
-  dataJson["windSpeed"] = windSpeed;
-  dataJson["pm25level"] = pm25level;
-  dataJson["pm10level"] = pm10level;
+  dataJson["uvIntensityMilliwattsPerCmSq"] = uvIntensity;
+  dataJson["rainfallStrengthPercentage"] = rainfallLevel;
+  dataJson["windSpeedKmPerHour"] = windSpeed;
+  dataJson["pm25density"] = pm25level;
+  dataJson["pm10density"] = pm10level;
 
+  Serial.println("Sending data");
+  Serial.println("---");
   String dataJsonOutput;
   serializeJson(dataJson, dataJsonOutput);
 
@@ -192,10 +288,13 @@ void sendData(double temperature, double humidity, double pressure, double uvInt
     client.println(dataJsonOutput);
     client.println();
     client.stop();
+    Serial.println("Sent.");
   }else{
     Serial.println("ERROR: Failed to connect");
     reboot();
   }
+
+  Serial.println("");
 }
 
 //The Arduino Map function but for floats
