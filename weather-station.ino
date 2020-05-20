@@ -1,4 +1,10 @@
 /**
+ * Installation-specific settings
+ */
+
+#define UV_SENSOR_CAP_TRANSPARENCY 0.9 // Transparency (0.0 to 1.0) of the glass cover on the UV sensor
+
+/**
  * Network Configuration
  */
 #define IP_1 192
@@ -184,13 +190,16 @@ void getUvSensorData(double*uvIntensity){
   int refLevel = averageAnalogueRead(REF_3V3);
   double outputVoltage = 3.3 / refLevel * uvLevel;
   double mapped = mapDouble(outputVoltage, ultravioletDarknessVoltage, ultravioletMaxVoltage, 0.0, maxUltravioletIntensityLevelAtLocation);
+  double adjustedIntensity = mapped / UV_SENSOR_CAP_TRANSPARENCY;
+  
+  *uvIntensity = adjustedIntensity;
 
-  *uvIntensity = mapped;
-
+  Serial.println("UV sensor glass transparency: " + String(UV_SENSOR_CAP_TRANSPARENCY));
   Serial.println("UV sensor level: " + String(uvLevel));
   Serial.println("Reference level: " + String(refLevel));
   Serial.println("Output voltage: " + String(outputVoltage));
   Serial.println("UV Intensity (mW/cm^2): " + String(mapped));
+  Serial.println("Adjusted UV Intensity (mW/cm^2): " + String(adjustedIntensity));
   Serial.println("");
 }
 

@@ -43,6 +43,8 @@ int REF_3V3 = 16; //3.3V power on the Arduino board, and the D0 pin
 #define MULTIPLEX_S2 13 // D7
 #define MULTIPLEX_S3 15 // D8
 
+const float glassTransparency = 0.88; // 0.0 to 1.0
+
 void setup()
 {
   Serial.begin(9600);
@@ -75,6 +77,8 @@ void loop()
   //todo in_min and in_max should be configurable depending on sensor behaviour
   float uvIntensity = mapfloat(outputVoltage, 1.07, 2.8, 0.0, 15.0); //Convert the voltage to a UV intensity level
 
+  float correctedIntensity = uvIntensity / glassTransparency; // Adjustment to handle the glass cover on top of the sensor
+  
   Serial.print("refLevel: ");
   Serial.print(refLevel);
 
@@ -86,6 +90,9 @@ void loop()
 
   Serial.print(" / UV Intensity (mW/cm^2): ");
   Serial.print(uvIntensity);
+
+  Serial.print(" / Corrected UV Intensity (mW/cm^2): ");
+  Serial.print(correctedIntensity);
 
   Serial.println();
 
