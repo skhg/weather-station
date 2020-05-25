@@ -2,9 +2,6 @@
 Arduino-based wireless personal weather station
 
 # Stuff required
-For solar power
-INA219 voltage/current sensor to measure panel performance
-
 For sensing environmental conditions
 
 * BME280 - temp/humidity/air pressure
