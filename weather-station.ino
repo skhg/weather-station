@@ -15,6 +15,12 @@
 #define WIFI_CONNECT_TIMEOUT_SECONDS 30
 
 /**
+ * Network hostname for the system
+ */
+
+const String HOST_NAME = "weather-station";
+
+/**
  * System properties
  */
 #define REBOOT_DELAY_MS 1000
@@ -347,6 +353,7 @@ void connectToWifi(){
   Serial.print("Connecting to ");
   Serial.println(WIFI_SSID); 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.hostname(HOST_NAME);
 
   int connectAttempts = 0;
   int connectRetryInterval = 500;
