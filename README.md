@@ -93,6 +93,7 @@ For the external UV sensor, I made a flat mount on a piece of board and painted 
 ** todo gif of the installed station with spinning **
 
 ## Software
+The onboard [software](weather-station.ino) runs in a simple loop.
 
 ## Data Capture and Visualisation
 
