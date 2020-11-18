@@ -48,9 +48,23 @@ UV Sensor module:
 * Weather-resistant cabling
 * Waterproof rubber gasket
 
+## Circuit
+The NodeMCU connects directly to the digital devices, and uses a multiplexer to read from the analog output devices. This diagram represents the anemometer as a "motor" - it generates signal pulses as it rotates on an axis.
+
+** todo block diagram here**
+
+The perfboard assembly was a little tricky because everything had to fit into a narrow package, and also be screwed on to the air quality board mounted directly underneath. This diagram shows how the two fit together. Those black squares on the perfboard show areas where holes were drilled to join the two together.
+
+** todo board diagram here**
+
+The UV sensor is itself mounted on a small perfboard, which terminates the connection from the main case (It's mounted about 5m away and connected over Cat5 cable)
+
+** todo mini board diagram here**
+
 ## Assembly
 
-## Circuit
+
+
 
 ## Software
 
@@ -60,6 +74,9 @@ UV Sensor module:
 
 ## Future enhancements
 
+Remove multiplexer:
+ * I think I had some issues with analogue data reads the first time around, but it appears that the multiplexer board isn't actually required. I would remove this next time and connect external devices directly to the NodeMCU board.
+ 
 Submit data online:
  * I would like to submit the recorded data from my server to https://luftdaten.info/, https://www.pwsweather.com/ or similar
 
