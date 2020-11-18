@@ -51,15 +51,18 @@ UV Sensor module:
 ## Circuit
 The NodeMCU connects directly to the digital devices, and uses a multiplexer to read from the analog output devices. This diagram represents the anemometer as a "motor" - it generates signal pulses as it rotates on an axis.
 
-** todo block diagram here**
+<p align="center"><img src="images/weather-station_bb.png"/><br/>
+ <i>Circuit overview - export from fritzing <a href="weather-station.fzz">file</a></i></p>
 
 The perfboard assembly was a little tricky because everything had to fit into a narrow package, and also be screwed on to the air quality board mounted directly underneath. This diagram shows how the two fit together. Those black squares on the perfboard show areas where holes were drilled to join the two together.
 
-** todo board diagram here**
+<p align="center"><img src="images/weather-station-board_bb.png"/><br/>
+ <i>Perfboard and external components - export from fritzing <a href="weather-station-board.fzz">file</a></i></p>
 
 The UV sensor is itself mounted on a small perfboard, which terminates the connection from the main case (It's mounted about 5m away and connected over Cat5 cable)
 
-** todo mini board diagram here**
+<p align="center"><img src="images/uv_sensor_mini_board_bb.png"/><br/>
+ <i>UV sensor mini board - export from fritzing <a href="uv_sensor_mini_board.fzz">file</a></i></p>
 
 ## Assembly
 
