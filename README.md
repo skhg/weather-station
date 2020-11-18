@@ -73,7 +73,7 @@ Case construction:
  * I would like to build a small "[patch panel](https://en.wikipedia.org/wiki/Patch_panel)" with JST connectors for all the external connections, that would be flat-mounted on the bottom of the case. A single USB connection for power/data would also be located here, so everything could be disconnected as needed without needing to open the whole thing up.
 
 Air intake tube mount:
-
+ * A 3D-printed mount for the air intake tube, [like this one](https://www.thingiverse.com/thing:3945004), would make the case look nicer and more professionally finished.
 
 ## References<a name="references"></a>
 * https://hackaday.io/project/165061-solar-powered-wifi-weather-station-v20#j-discussions-title - A solar-powered weather station combining several of the same sensors used here.
