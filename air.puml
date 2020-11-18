@@ -1,0 +1,14 @@
+@startuml
+
+title Read air quality
+
+start
+
+:Wake up SDS011;
+:Wait 30 seconds;
+:Read SDS011 data;
+:Sleep SDS011;
+
+stop
+
+@enduml

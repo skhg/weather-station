@@ -1,0 +1,19 @@
+@startuml
+
+title Read wind speed
+
+start
+
+:Start timer;
+:Set anemometer initial state\nSet counter=0;
+repeat
+    if(Anemometer state changed?) then (yes)
+        :Increment counter;
+    else(no)
+    endif
+repeat while(timer < 10 seconds)
+:Convert counter to wind speed;
+
+stop
+
+@enduml

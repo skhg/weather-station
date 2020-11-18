@@ -1,0 +1,40 @@
+@startuml
+
+title Weather Station cycle
+
+start
+
+:Boot;
+
+partition Setup {
+    if (Connect to WiFi) then (success)
+        :Set up system configuration;
+    else (failure)
+        :Hard reboot;
+        end
+    endif
+}
+
+partition "Capture Loop" {
+    repeat
+        :Read BME280;
+        :Read Rainfall;
+        :Read UV;
+        :Read wind speed;
+        note right: Refer to\nWind speed\ndiagram
+        :Read air quality;
+        note right: Refer to\nAir quality\ndiagram
+        partition "Transmit data" {
+            :Assemble JSON blob;
+            if(Connect to server) then (ok)
+                :Send data;
+            else(failure)
+                :Hard reboot;
+                end
+            endif
+        }
+    repeat while(Sleep for 60 seconds)
+    
+}
+
+@enduml
