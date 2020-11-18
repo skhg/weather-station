@@ -97,9 +97,15 @@ For the external UV sensor, I made a flat mount on a piece of board and painted 
 ## Data Capture and Visualisation
 
 ## Performance over time
+It survived its first summer with months of direct sunlight and internal temperatures up to 37°C. Will it survive its first winter, with ice and snow? Time will tell...
+
+As of November 2020 it's been outside for over 6 months and still works, data seems consistent and matches what I see from the official weather reports. The only component that has significantly degraded is the rainfall sensor, which gives junk results now. Constant rainfall has eroded the resistive surface and left some kind of rust all over it. This should be replaced.
 
 ## Future enhancements
 
+Rainfall sensor:
+ * Replace with a better device that will not degrade so much over time. A capacitive option might be a good alternative with no moving parts.
+ 
 Remove multiplexer:
  * I think I had some issues with analogue data reads the first time around, but it appears that the multiplexer board isn't actually required. I would remove this next time and connect external devices directly to the NodeMCU board.
  
