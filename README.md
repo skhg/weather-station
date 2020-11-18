@@ -93,7 +93,9 @@ For the external UV sensor, I made a flat mount on a piece of board and painted 
 ** todo gif of the installed station with spinning **
 
 ## Software
-The onboard [software](weather-station.ino) runs in a simple loop.
+The onboard [software](weather-station.ino) runs in a continuous loop. It simply captures the data, packages the results in a JSON blob, and sends them to a logging server on the local LAN. In case of any errors connecting to WiFi or to this server, it does a hard reboot. This is sufficient since the data is not time-critical, and up-to-date data is less important than an hourly/daily trend.
+
+<img src="images/cycle.svg" width="50%"/><img src="images/wind.svg" width="30%"/><img src="images/air.svg" width="20%"/>
 
 ## Data Capture and Visualisation
 
