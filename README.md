@@ -1,7 +1,7 @@
 # weather-station
 I wanted to experiment with building environmental sensors, and see if I could make homemade electronics that would survive in the outdoors. So I built a weather station based around the Arduino-compatible ESP8266 platform.
 
-# Overview
+## Overview
 There are many possible instruments that can be part of a weather station. For the amateur meteorologist, just a few are needed to make a start. They can all be bought cheaply online, and a weatherproof case can be made out of just a few short lengths of PVC piping. Credit to https://sensor.community for inspiration here - I based the system on this [reference design](https://sensor.community/en/sensors/airrohr/), with some additions for the extra sensors I wanted. The software is custom-made. See the [references](#references) section at the end for many useful links on how to build something similar yourself.
 
 With this system we can measure:
@@ -37,6 +37,7 @@ Case construction:
 * 2x [45-degree drainpipe elbow](https://www.obi.de/ht-boegen/marley-ht-bogen-45-dn-75-grau/p/7436181)
 * [Drainpipe with "cleaning" cap](https://www.obi.de/ht-reinigungsrohre/marley-ht-reinigungsrohr-dn-75/p/7434681)
 * 2x [Gutter bracket](https://www.obi.de/kunststoff-dachrinnen/marley-rinnenhalter-verstellbar-dn-75-grau/p/5088869)
+* [PTFE tape](https://www.amazon.de/-/en/Pack-Sealing-Thread-Teflon-White/dp/B071X6PC89/ref=sr_1_5?dchild=1&keywords=ptfe+tape&qid=1605696229&sr=8-5) for sealing joints
 * Wooden board for mounting as required
 * Rubber tube for air intake
 * Insulating plastic/foam liner
@@ -55,7 +56,23 @@ UV Sensor module:
 
 ## Data Capture and Visualisation
 
-# References<a name="references"></a>
+## Performance over time
+
+## Future enhancements
+
+Data validation:
+ * The onboard software does no sanity checking of the data it reports back to the server. On at least one occasion this meant it reported a temperature of -143°C which was fixed by a hard reboot.
+ * The software should include some hardcoded bounds outside which it will report an error status back to the server.
+
+Case construction:
+ * The anemometer is mounted into a hole drilled in the pipe cleaning cap. Next time I would rather mount the anemometer into a bracket that clips on top of that cap. Having a hole that has to be sealed with PTFE, right above the electronics, is likely to eventually fail due to water accumulation.
+ * All the external connectors (USB power in, rainfall sensor, UV sensor, and anemometer cable) are routed through holes drilled in the bottom of the case. This doesn't look great, and makes it awkward/imposssible to disconnect them without disassembling the whole thing.
+ * I would like to build a small "[patch panel](https://en.wikipedia.org/wiki/Patch_panel)" with JST connectors for all the external connections, that would be flat-mounted on the bottom of the case. A single USB connection for power/data would also be located here, so everything could be disconnected as needed without needing to open the whole thing up.
+
+Air intake tube mount:
+
+
+## References<a name="references"></a>
 * https://hackaday.io/project/165061-solar-powered-wifi-weather-station-v20#j-discussions-title - A solar-powered weather station combining several of the same sensors used here.
 * https://www.geeky-gadgets.com/arduino-wind-speed-meter-anemometer-project-30032016/ - Converting an anemometer's analogue readings into a digital signal for wind speed
 * https://learn.sparkfun.com/tutorials/ml8511-uv-sensor-hookup-guide/all - Using a UV intensity sensor
