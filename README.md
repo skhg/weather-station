@@ -38,6 +38,7 @@ Case construction:
 * [Drainpipe with "cleaning" cap](https://www.obi.de/ht-reinigungsrohre/marley-ht-reinigungsrohr-dn-75/p/7434681)
 * 2x [Gutter bracket](https://www.obi.de/kunststoff-dachrinnen/marley-rinnenhalter-verstellbar-dn-75-grau/p/5088869)
 * Wooden board for mounting as required
+* Rubber tube for air intake
 * Insulating plastic/foam liner
 
 UV Sensor module:
