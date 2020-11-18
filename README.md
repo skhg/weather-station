@@ -2,7 +2,7 @@
 I wanted to experiment with building environmental sensors, and see if I could make homemade electronics that would survive in the outdoors. So I built a weather station based around the Arduino-compatible ESP8266 platform.
 
 # Overview
-There are many possible instruments that can be part of a weather station. For the amateur meteorologist, just a few are needed to make a start. They can all be bought cheaply online, and a weatherproof case can be made out of just a few short lengths of PVC piping. I based the system on this [reference design](https://sensor.community/en/sensors/airrohr/), with some additions for the extra sensors I wanted. The software is custom-made.
+There are many possible instruments that can be part of a weather station. For the amateur meteorologist, just a few are needed to make a start. They can all be bought cheaply online, and a weatherproof case can be made out of just a few short lengths of PVC piping. Credit to https://sensor.community for inspiration here - I based the system on this [reference design](https://sensor.community/en/sensors/airrohr/), with some additions for the extra sensors I wanted. The software is custom-made. See the [references](#references) section at the end for many useful links on how to build something similar yourself.
 
 With this system we can measure:
  * Wind speed
@@ -55,13 +55,13 @@ UV Sensor module:
 
 ## Data Capture and Visualisation
 
-# References
-* https://hackaday.io/project/165061-solar-powered-wifi-weather-station-v20#j-discussions-title
-* https://www.geeky-gadgets.com/arduino-wind-speed-meter-anemometer-project-30032016/
-* https://learn.sparkfun.com/tutorials/ml8511-uv-sensor-hookup-guide/all
-* https://gist.github.com/geoffwatts/b0b488b5a5257223ed53
-* https://sensor.community/en/sensors/
-* https://sensor.community/en/sensors/airrohr/
-* https://learn.pimoroni.com/tutorial/sandyj/enviro-plus-and-luftdaten-air-quality-station
-* https://www.aeq-web.com/anemometer-mit-dem-arduino-bauen/
-* Handling interrupts https://forum.arduino.cc/index.php?topic=616264.0
+# References<a name="references"></a>
+* https://hackaday.io/project/165061-solar-powered-wifi-weather-station-v20#j-discussions-title - A solar-powered weather station combining several of the same sensors used here.
+* https://www.geeky-gadgets.com/arduino-wind-speed-meter-anemometer-project-30032016/ - Converting an anemometer's analogue readings into a digital signal for wind speed
+* https://learn.sparkfun.com/tutorials/ml8511-uv-sensor-hookup-guide/all - Using a UV intensity sensor
+* https://gist.github.com/geoffwatts/b0b488b5a5257223ed53 - Using a PM2.5 air particulate sensor
+* https://sensor.community/en/sensors/ - Reference designs for weather stations which I used as inspiration for this project
+* https://sensor.community/en/sensors/airrohr/ - The specific example I based this project on
+* https://learn.pimoroni.com/tutorial/sandyj/enviro-plus-and-luftdaten-air-quality-station - A similar project although based around the Raspberry Pi Zero platform
+* https://www.aeq-web.com/anemometer-mit-dem-arduino-bauen/ - Reading from an anemometer using an Arduino Uno
+* https://forum.arduino.cc/index.php?topic=616264.0 - Handling interrupts on a NodeMCU board
