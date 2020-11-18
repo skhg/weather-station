@@ -66,8 +66,31 @@ The UV sensor is itself mounted on a small perfboard, which terminates the conne
 
 ## Assembly
 
+First step was to make sure all the components were working together. I had tested them [individually](/testing) beforehand. Here they're all mounted on a breadboard with external components wired in too.
 
+<p align="center"><img src="images/testing.jpeg"/></p>
 
+Next step was soldering the perfboard and mounting the multiplexer, NodeMCU and wiring. Followed by mounting the air quality sensor underneath - with a layer of plastic and foam in between to prevent any short-circuits between exposed pins on the two devices.
+
+<p align="center"><img src="images/board_only.jpeg" width="50%"/><img src="images/board_airqual_mounted.jpeg" width="50%"/></p>
+
+And sliding the complete unit into the case:
+
+<p align="center"><img src="images/sliding_into_tube.jpeg" width="50%"/><img src="images/installed_top.jpeg" width="50%"/></p>
+
+It's a tight fit!
+
+<p align="center"><img src="images/tight_fit.jpeg"/></p>
+
+For the external UV sensor, I made a flat mount on a piece of board and painted it white, to keep moisture out and keep it cool in the sunshine. The UV sensor is protected from moisture by:
+ * A white cap from a jar of skin cream
+ * A rubber gasket from a coffee mokka
+ * An inverted clock glass (with relatively high UV-transmissivity)
+ * Some plastic chair leg-ends to clamp it together with some flexibility
+ 
+<p align="center"><img src="images/uv_board_assembled.jpeg" width="50%"/><img src="images/uv_board_installed.jpeg" width="50%"/></p>
+
+** todo gif of the installed station with spinning **
 
 ## Software
 
