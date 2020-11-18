@@ -60,6 +60,9 @@ UV Sensor module:
 
 ## Future enhancements
 
+Submit data online:
+ * I would like to submit the recorded data from my server to https://luftdaten.info/, https://www.pwsweather.com/ or similar
+
 Data validation:
  * The onboard software does no sanity checking of the data it reports back to the server. On at least one occasion this meant it reported a temperature of -143°C which was fixed by a hard reboot.
  * The software should include some hardcoded bounds outside which it will report an error status back to the server.
@@ -82,3 +85,4 @@ Air intake tube mount:
 * https://learn.pimoroni.com/tutorial/sandyj/enviro-plus-and-luftdaten-air-quality-station - A similar project although based around the Raspberry Pi Zero platform
 * https://www.aeq-web.com/anemometer-mit-dem-arduino-bauen/ - Reading from an anemometer using an Arduino Uno
 * https://forum.arduino.cc/index.php?topic=616264.0 - Handling interrupts on a NodeMCU board
+* https://github.com/Naesstrom/Airrohr-kit - A similar project using a PCB
