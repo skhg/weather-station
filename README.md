@@ -3,7 +3,7 @@ I wanted to experiment with building environmental sensors, and see if I could m
 
 <p align="center">
 <img src="images/station.gif"/><br/>
-<i>Weather station at work, in a light breeze.</i>
+<i>Weather station at work, in a light breeze. Most of the fun stuff is hidden inside that grey pipe.</i>
 </p>
 
 ## Overview
@@ -12,13 +12,13 @@ There are many possible instruments that can be part of a weather station. For t
 With this system we can measure:
  * Wind speed
  * Temperature
- * Relative humidity
- * Air pressure
- * Air particulate matter (PM2.5 and PM10)
- * Solar U.V. intensity
+ * [Relative humidity](https://en.wikipedia.org/wiki/Relative_humidity)
+ * [Air pressure](https://en.wikipedia.org/wiki/Atmospheric_pressure)
+ * Air [particulate](https://en.wikipedia.org/wiki/Particulates) matter (PM2.5 and PM10)
+ * Solar U.V. [intensity](https://en.wikipedia.org/wiki/Ultraviolet_index) - we can estimate the U.V. index
  * Rainfall (sort-of)
  
-This is a wall-mounted device so wind direction wasn't really something I cared about for this build.
+This is a wall-mounted device so wind direction wasn't really something I cared about for this project.
 
 ## Materials required
 
@@ -95,7 +95,7 @@ For the external UV sensor, I made a flat mount on a piece of board and painted 
  
 <p align="center"><img src="images/uv_board_assembled.jpeg" width="50%"/><img src="images/uv_board_installed.jpeg" width="50%"/></p>
 
-** todo gif of the installed station with spinning **
+** todo photos the the installed station from various angles **
 
 ## Software
 The onboard [software](weather-station.ino) runs in a continuous loop. It simply captures the data, packages the results in a JSON blob, and sends them to a logging server on the local LAN. In case of any errors connecting to WiFi or to this server, it does a hard reboot. This is sufficient since the data is not time-critical, and up-to-date data is less important than an hourly/daily trend.
@@ -103,6 +103,8 @@ The onboard [software](weather-station.ino) runs in a continuous loop. It simply
 <img src="images/cycle.svg" width="50%"/><img src="images/wind.svg" width="30%"/><img src="images/air.svg" width="20%"/>
 
 ## Data Capture and Visualisation
+
+** todo grafana, server, data format, etc **
 
 ## Performance over time
 It survived its first summer with months of direct sunlight and internal temperatures up to 37°C. Will it survive its first winter, with ice and snow? Time will tell...
