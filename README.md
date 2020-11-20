@@ -1,4 +1,4 @@
-# weather-station
+# weather-station<a name="introduction"></a>
 I wanted to experiment with building environmental sensors, and see if I could make homemade electronics that would survive in the outdoors. So I built a weather station based around the Arduino-compatible ESP8266 platform.
 
 <p align="center">
@@ -95,7 +95,19 @@ For the external UV sensor, I made a flat mount on a piece of board and painted 
  
 <p align="center"><img src="images/uv_board_assembled.jpeg" width="50%"/><img src="images/uv_board_installed.jpeg" width="50%"/></p>
 
-** todo photos the the installed station from various angles **
+### Mounted in place
+
+With everything in place and tightly fit together, it was time to install it in place on the balcony. We have a drainpipe that was a convenient place to attach it, as you can see in the <a href="#introduction">introduction</a>.
+
+<p align="center">
+<img src="images/under.gif"/><br/>
+<i>View from underneath. Holes for external connections in the middle here.</i>
+</p>
+
+<p align="center">
+<img src="images/tube_tempsensor.jpeg" width="50%"/><img src="images/tube_airsensor.jpeg" width="50%"/><br/>
+<i>Views from the ends of either side of the main tube. Left: air intake tube and BME280 sensor. Right: rear of the SDS011 and exposed cabling.</i>
+</p>
 
 ## Software
 The onboard [software](weather-station.ino) runs in a continuous loop. It simply captures the data, packages the results in a JSON blob, and sends them to a logging server on the local LAN. In case of any errors connecting to WiFi or to this server, it does a hard reboot. This is sufficient since the data is not time-critical, and up-to-date data is less important than an hourly/daily trend.
