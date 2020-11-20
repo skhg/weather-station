@@ -109,14 +109,34 @@ With everything in place and tightly fit together, it was time to install it in 
 <i>Views from the ends of either side of the main tube.<br/>Left: air intake tube and BME280 sensor. Right: rear of the SDS011 and exposed cabling.</i>
 </p>
 
-## Software
-The onboard [software](weather-station.ino) runs in a continuous loop. It simply captures the data, packages the results in a JSON blob, and sends them to a logging server on the local LAN. In case of any errors connecting to WiFi or to this server, it does a hard reboot. This is sufficient since the data is not time-critical, and up-to-date data is less important than an hourly/daily trend.
+## Onboard software
+The onboard [software](weather-station.ino) runs in a continuous loop. It captures the data, packages the results in a JSON blob, and sends them to a logging server on the local LAN. In case of any errors connecting to WiFi or to this server, it does a hard reboot. This is sufficient since the data is not time-critical, and up-to-date data is less important than an hourly/daily trend.
 
 <img src="images/cycle.svg" width="50%"/><img src="images/wind.svg" width="30%"/><img src="images/air.svg" width="20%"/>
 
 ## Data Capture and Visualisation
 
-** todo grafana, server, data format, etc **
+Readings are packaged as a JSON blob and sent to a logging server on the local LAN, using a REST `POST` over HTTP. A sample message looks like:
+
+```json
+{
+    "temperatureC" : 21.2,
+    "humidityPercentage" : 34.2,
+    "airPressurePa" : 1001000.2,
+    "uvIntensityMilliwattsPerCmSq" : 3.2,
+    "rainfallStrengthPercentage" : 10.2,
+    "pm25density" : 10.1,
+    "pm10density" : 9.8,
+    "windSpeedKmPerHour" : 0.67
+}
+```
+
+The logging server is a custom [Spring Boot](https://spring.io/projects/spring-boot) application. It logs the data to [InfluxDB](https://www.influxdata.com/), a time-series database. [Grafana](https://grafana.com/) is used for visualising the data.
+
+<p align="center">
+<img src="images/data_24hr_sample.png" width="48%"/> <img src="images/data_6month_sample.png" width="48%"/><br/>
+<i>Screenshots of sample data from the Grafana dashboard.<br/>Left: 24 hours of data. Right: 6 months of data.</i>
+</p>
 
 ## Performance over time
 It survived its first summer with months of direct sunlight and internal temperatures up to 37°C. Will it survive its first winter, with ice and snow? Time will tell...
