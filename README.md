@@ -106,7 +106,7 @@ With everything in place and tightly fit together, it was time to install it in 
 
 <p align="center">
 <img src="images/tube_tempsensor.jpeg" width="50%"/><img src="images/tube_airsensor.jpeg" width="50%"/><br/>
-<i>Views from the ends of either side of the main tube. Left: air intake tube and BME280 sensor. Right: rear of the SDS011 and exposed cabling.</i>
+<i>Views from the ends of either side of the main tube.<br/>Left: air intake tube and BME280 sensor. Right: rear of the SDS011 and exposed cabling.</i>
 </p>
 
 ## Software
