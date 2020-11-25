@@ -11,7 +11,7 @@ jobs:
           pip install cpplint
       - name: Run C++ linter
         run: |
-          cpplint --extensions=ino *.ino
+          cpplint --extensions=ino *.ino testing/anemometer/**/*.ino testing/sds011/**/*.ino
 
   test-compile:
     runs-on: ubuntu-latest
