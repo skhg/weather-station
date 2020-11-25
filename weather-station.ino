@@ -261,7 +261,8 @@ void getWindSpeedKmPerHr(double*windSpeed) {
 
   uint64_t startTime = millis();
 
-  Serial.println("Start time: " + String(startTime));
+  Serial.print("Start time: ");
+  Serial.println(millis());
   Serial.println("Measure for: " + String(windMeasurementSeconds) +
   " seconds...");
 
