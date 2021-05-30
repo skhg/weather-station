@@ -57,6 +57,7 @@ void loop() {
   } else {
   // todo debounce based on change time < 10 millis, maybe not needed
     if (windState != anemometerState) {
+      Serial.println("count");
       wind_ct++;  // corresponds to 1/4 rotation
       windState = anemometerState;
     }

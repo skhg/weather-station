@@ -77,8 +77,8 @@ float ultravioletDarknessVoltage = 1.07;
 float ultravioletMaxVoltage = 2.8;
 float maxUltravioletIntensityLevelAtLocation = 8.0;
 int sdsInhalationSeconds = 30;
-int windMeasurementSeconds = 10;
-int cycleIntervalSeconds = 60;
+int windMeasurementSeconds = 30;
+int cycleIntervalSeconds = 40;
 
 void setup() {
   Serial.begin(9600);
@@ -103,9 +103,6 @@ void loop() {
 
   getBme280data(&temperature, &pressure, &humidity);
 
-  double rainfallLevel;
-  getRainfallData(&rainfallLevel);
-
   double uvIntensity;
   getUvSensorData(&uvIntensity);
 
@@ -116,7 +113,7 @@ void loop() {
   double pm10level;
   getParticulateData(&pm25level, &pm10level);
 
-  sendData(temperature, humidity, pressure, uvIntensity, rainfallLevel,
+  sendData(temperature, humidity, pressure, uvIntensity,
   windSpeed, pm25level, pm10level);
 
   sleepUntilNext();
@@ -176,24 +173,6 @@ void getBme280data(double*temperature, double*pressure, double*humidity) {
   *temperature = liveTemp;
   *pressure = livePressure;
   *humidity = liveHumidity;
-}
-
-void getRainfallData(double*rainfallPercentage) {
-  setActiveMultiplexerChannel(1);
-  int sensorReading = analogRead(ANALOGUE_IN);
-  int maxValue = 1024;
-  int rawWetness = maxValue - sensorReading;
-  double rainPercent = mapDouble(static_cast<double>(rawWetness), 0.0, 1024.0,
-  0.0, 100.0);
-
-  Serial.println("Rainfall Sensor");
-  Serial.println("---");
-  Serial.println("Sensor reading: " + String(sensorReading));
-  Serial.println("Wetness: " + String(rawWetness) + " / " + String(maxValue));
-  Serial.println("Wetness %: " + String(rainPercent));
-  Serial.println("");
-
-  *rainfallPercentage = rainPercent;
 }
 
 void getUvSensorData(double*uvIntensity) {
@@ -293,13 +272,12 @@ void getWindSpeedKmPerHr(double*windSpeed) {
 }
 
 void sendData(double temperature, double humidity, double pressure,
-  double uvIntensity, double rainfallLevel, double windSpeed, double pm25level,
+  double uvIntensity, double windSpeed, double pm25level,
   double pm10level) {
   dataJson["temperatureC"] = temperature;
   dataJson["airPressurePa"] = pressure;
   dataJson["humidityPercentage"] = humidity;
   dataJson["uvIntensityMilliwattsPerCmSq"] = uvIntensity;
-  dataJson["rainfallStrengthPercentage"] = rainfallLevel;
   dataJson["windSpeedKmPerHour"] = windSpeed;
   dataJson["pm25density"] = pm25level;
   dataJson["pm10density"] = pm10level;
