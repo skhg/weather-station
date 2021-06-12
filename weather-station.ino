@@ -14,18 +14,24 @@
 /**
  * Network Configuration
  */
-#define IP_1 192
-#define IP_2 168
-#define IP_3 178
-#define IP_4 29
-#define IP_PORT 8080
 #define WIFI_CONNECT_TIMEOUT_SECONDS 30
 
 /**
- * Network hostname for the system
+ * Data logging server configuration
  */
 
-const String HOST_NAME = "weather-station";
+#define SERVER_ADDRESS "http://192.168.178.29:8080"
+#define URL_PATH "/weather-station/balcony"
+#define HOSTNAME "weather-station"
+
+/**
+ * String defaults
+ */
+#define SEPARATOR_LINE "---"
+#define HTTP_CONTENT_TYPE_HEADER "Content-Type"
+#define HTTP_CONTENT_LENGTH_HEADER "Content-Length"
+#define HTTP_JSON_CONTENT_TYPE "application/json"
+#define EMPTY_STRING ""
 
 /**
  * System properties
@@ -53,7 +59,7 @@ const String HOST_NAME = "weather-station";
 #include <Adafruit_BME280.h>
 #include "SdsDustSensor.h"
 #include <ArduinoJson.h>
-
+#include <ESP8266HTTPClient.h>
 
 /**
  * Instruments
@@ -64,10 +70,8 @@ SdsDustSensor sds(SDS_DUST_RX, SDS_DUST_TX);
 /**
  * Network messages
  */
-const int dataFieldsCapacity = JSON_OBJECT_SIZE(8);
-StaticJsonDocument<dataFieldsCapacity> dataJson;
-WiFiClient client;
-IPAddress server(IP_1, IP_2, IP_3, IP_4);
+WiFiClient WIFI_CLIENT;
+HTTPClient HTTP_CLIENT;
 
 /**
  * Runtime parameters
@@ -76,24 +80,22 @@ uint64_t previousTime = 0;
 float ultravioletDarknessVoltage = 1.07;
 float ultravioletMaxVoltage = 2.8;
 float maxUltravioletIntensityLevelAtLocation = 8.0;
-int sdsInhalationSeconds = 30;
-int windMeasurementSeconds = 30;
-int cycleIntervalSeconds = 40;
+int airMeasurementSeconds = 30;
+int cycleIntervalSeconds = 80; // To make a cycle which runs a bit more than every 2 minutes
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   Serial.println("Booting");
   delay(REBOOT_DELAY_MS);  // Allow a moment for some sensors to initialise
 
   previousTime = millis();
 
-  connectToWifi();
   setupMultiplexer();
   setupInstruments();
 
   Serial.println("Setup complete!");
-  Serial.println("");
+  Serial.println(EMPTY_STRING);
 }
 
 void loop() {
@@ -106,25 +108,33 @@ void loop() {
   double uvIntensity;
   getUvSensorData(&uvIntensity);
 
+  startParticulateMeasurement();
+  
   double windSpeed;
   getWindSpeedKmPerHr(&windSpeed);
 
   double pm25level;
   double pm10level;
-  getParticulateData(&pm25level, &pm10level);
+  endParticulateMeasurement(&pm25level, &pm10level);
 
-  sendData(temperature, humidity, pressure, uvIntensity,
-  windSpeed, pm25level, pm10level);
+  if (connectToWifi()) {
+    sendData(temperature, humidity, pressure, uvIntensity,
+      windSpeed, pm25level, pm10level);
+  }
 
+  WiFi.disconnect();
+  WiFi.forceSleepBegin();
+  
   sleepUntilNext();
 }
 
 void sleepUntilNext() {
   Serial.println("Cycle complete.");
-  Serial.println("---");
+  Serial.println(SEPARATOR_LINE);
   Serial.println("Sleeping for " + String(cycleIntervalSeconds) +
   " seconds...");
-  Serial.println("");
+  Serial.println(EMPTY_STRING);
+  Serial.flush();
 
   delay(cycleIntervalSeconds * 1000);
 }
@@ -147,7 +157,7 @@ void setupInstruments() {
   Serial.println("Setup BME280...");
   // Temp/humidity/pressure sensor
   bme.begin(0x76);
-  Serial.println("");
+  Serial.println(EMPTY_STRING);
 
   Serial.println("Setup SDS011...");
   // Dust sensor
@@ -155,7 +165,7 @@ void setupInstruments() {
   Serial.println(sds.queryFirmwareVersion().toString());
   Serial.println(sds.setQueryReportingMode().toString());
   sds.sleep();
-  Serial.println("");
+  Serial.println(EMPTY_STRING);
 }
 
 void getBme280data(double*temperature, double*pressure, double*humidity) {
@@ -164,11 +174,11 @@ void getBme280data(double*temperature, double*pressure, double*humidity) {
   double liveHumidity = bme.readHumidity();
 
   Serial.println("BME280");
-  Serial.println("---");
+  Serial.println(SEPARATOR_LINE);
   Serial.println("Temperature: " + String(liveTemp));
   Serial.println("Pressure: " + String(livePressure));
   Serial.println("Humidity: " + String(liveHumidity));
-  Serial.println("");
+  Serial.println(EMPTY_STRING);
 
   *temperature = liveTemp;
   *pressure = livePressure;
@@ -177,7 +187,7 @@ void getBme280data(double*temperature, double*pressure, double*humidity) {
 
 void getUvSensorData(double*uvIntensity) {
   Serial.println("ML8511");
-  Serial.println("---");
+  Serial.println(SEPARATOR_LINE);
   setActiveMultiplexerChannel(0);
   int uvLevel = averageAnalogueRead(ANALOGUE_IN);
   int refLevel = averageAnalogueRead(REF_3V3);
@@ -196,19 +206,17 @@ void getUvSensorData(double*uvIntensity) {
   Serial.println("UV Intensity (mW/cm^2): " + String(mapped));
   Serial.println("Adjusted UV Intensity (mW/cm^2): " +
   String(adjustedIntensity));
-  Serial.println("");
+  Serial.println(EMPTY_STRING);
 }
 
-void getParticulateData(double*pm25, double*pm10) {
+void startParticulateMeasurement() {
   Serial.println("SDS011");
-  Serial.println("---");
+  Serial.println(SEPARATOR_LINE);
   Serial.println("Waking up...");
   sds.wakeup();
-  Serial.println("Inhaling for " + String(sdsInhalationSeconds) +
-  " seconds...");
+}
 
-  delay(sdsInhalationSeconds * 1000);
-
+void endParticulateMeasurement(double*pm25, double*pm10) {
   PmResult pm = sds.queryPm();
   if (pm.isOk()) {
     double newPm25 = pm.pm25;
@@ -230,26 +238,26 @@ void getParticulateData(double*pm25, double*pm10) {
   } else {
     Serial.println("Asleep");
   }
-  Serial.println("");
+  Serial.println(EMPTY_STRING);
 }
 
 void getWindSpeedKmPerHr(double*windSpeed) {
   Serial.println("Anemometer");
-  Serial.println("---");
+  Serial.println(SEPARATOR_LINE);
   setActiveMultiplexerChannel(2);
 
   uint64_t startTime = millis();
 
   Serial.print("Start time: ");
   Serial.println(millis());
-  Serial.println("Measure for: " + String(windMeasurementSeconds) +
+  Serial.println("Measure for: " + String(airMeasurementSeconds) +
   " seconds...");
 
   int currentState = map(analogRead(ANALOGUE_IN), 0, 1024, 0, 1);
   int nextState = currentState;
   int stateChangeCount = 0;  // One state change corresponds to 1/4 rotation
 
-  while ((uint64_t)(millis() - startTime) < windMeasurementSeconds * 1000) {
+  while ((uint64_t)(millis() - startTime) < airMeasurementSeconds * 1000) {
     nextState = map(analogRead(ANALOGUE_IN), 0, 1024, 0, 1);
     if (nextState != currentState) {
       stateChangeCount++;
@@ -263,10 +271,10 @@ void getWindSpeedKmPerHr(double*windSpeed) {
   " state changes (1/4 rotations)");
 
   double windSpeedKmHr = static_cast<double>(stateChangeCount) /
-  static_cast<double>(windMeasurementSeconds) * 1.2;
+  static_cast<double>(airMeasurementSeconds) * 1.2;
 
   Serial.println("Wind Speed: " + String(windSpeedKmHr) + " km/hr");
-  Serial.println("");
+  Serial.println(EMPTY_STRING);
 
   *windSpeed = windSpeedKmHr;
 }
@@ -274,6 +282,9 @@ void getWindSpeedKmPerHr(double*windSpeed) {
 void sendData(double temperature, double humidity, double pressure,
   double uvIntensity, double windSpeed, double pm25level,
   double pm10level) {
+
+  StaticJsonDocument<JSON_OBJECT_SIZE(8) + 1000> dataJson;
+  
   dataJson["temperatureC"] = temperature;
   dataJson["airPressurePa"] = pressure;
   dataJson["humidityPercentage"] = humidity;
@@ -283,29 +294,21 @@ void sendData(double temperature, double humidity, double pressure,
   dataJson["pm10density"] = pm10level;
 
   Serial.println("Sending data");
-  Serial.println("---");
-  String dataJsonOutput;
-  serializeJson(dataJson, dataJsonOutput);
+  Serial.println(SEPARATOR_LINE);
+  String jsonString;
+  serializeJson(dataJson, jsonString);
 
-  // todo: use the nicer http library
+  HTTP_CLIENT.begin(WIFI_CLIENT, String(SERVER_ADDRESS) + String(URL_PATH));
 
-  if (client.connect(server, IP_PORT)) {
-    // Make a HTTP request:
-    client.println("POST /weather-station/balcony HTTP/1.0");
-    client.println("Content-Type: application/json");
-    client.print("Content-Length: ");
-    client.println(dataJsonOutput.length());
-    client.println();
-    client.println(dataJsonOutput);
-    client.println();
-    client.stop();
-    Serial.println("Sent.");
-  } else {
-    Serial.println("ERROR: Failed to connect");
-    reboot();
-  }
+  HTTP_CLIENT.addHeader(HTTP_CONTENT_TYPE_HEADER, HTTP_JSON_CONTENT_TYPE);
+  HTTP_CLIENT.addHeader(HTTP_CONTENT_LENGTH_HEADER,
+    String(jsonString.length()));
+  int result = HTTP_CLIENT.POST(jsonString);
 
-  Serial.println("");
+  Serial.print("Completed with response code: ");
+  Serial.println(result);
+
+  Serial.flush();
 }
 
 /**
@@ -335,23 +338,20 @@ int averageAnalogueRead(int pinToRead) {
  * System management functions
  */
 
-void reboot() {
-  delay(REBOOT_DELAY_MS);
-  Serial.println("Rebooting...");
-  ESP.restart();
-}
+boolean connectToWifi() {
+  Serial.println(SEPARATOR_LINE);
 
-void connectToWifi() {
-  String wifiConnectionInfo = "Connecting to WiFi";
-
+  WiFi.forceSleepWake();
+  
   if (WiFi.status() == WL_CONNECTED) {
-    return;
+    return true;
   }
 
   Serial.print("Connecting to ");
   Serial.println(WIFI_SSID);
+
+  WiFi.hostname(HOSTNAME);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  WiFi.hostname(HOST_NAME);
 
   int connectAttempts = 0;
   int connectRetryInterval = 500;
@@ -365,10 +365,13 @@ void connectToWifi() {
     rebootCountdown = rebootCountdown - connectRetryInterval;
 
     if (rebootCountdown < 0) {
-      reboot();
+      Serial.println(EMPTY_STRING);
+      Serial.println("Failed to connect.");
+      return false;
     }
   }
 
-  Serial.println("");
+  Serial.println(EMPTY_STRING);
   Serial.println("WiFi connected");
+  return true;
 }
