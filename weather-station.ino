@@ -81,7 +81,7 @@ float ultravioletDarknessVoltage = 1.07;
 float ultravioletMaxVoltage = 2.8;
 float maxUltravioletIntensityLevelAtLocation = 8.0;
 int airMeasurementSeconds = 30;
-int cycleIntervalSeconds = 80; // To make a cycle which runs a bit more than every 2 minutes
+int cycleIntervalSeconds = 80;  // Runs a bit more than every 2 minutes
 
 void setup() {
   Serial.begin(115200);
@@ -109,7 +109,7 @@ void loop() {
   getUvSensorData(&uvIntensity);
 
   startParticulateMeasurement();
-  
+
   double windSpeed;
   getWindSpeedKmPerHr(&windSpeed);
 
@@ -124,7 +124,7 @@ void loop() {
 
   WiFi.disconnect();
   WiFi.forceSleepBegin();
-  
+
   sleepUntilNext();
 }
 
@@ -282,9 +282,8 @@ void getWindSpeedKmPerHr(double*windSpeed) {
 void sendData(double temperature, double humidity, double pressure,
   double uvIntensity, double windSpeed, double pm25level,
   double pm10level) {
-
   StaticJsonDocument<JSON_OBJECT_SIZE(8) + 1000> dataJson;
-  
+
   dataJson["temperatureC"] = temperature;
   dataJson["airPressurePa"] = pressure;
   dataJson["humidityPercentage"] = humidity;
@@ -342,7 +341,7 @@ boolean connectToWifi() {
   Serial.println(SEPARATOR_LINE);
 
   WiFi.forceSleepWake();
-  
+
   if (WiFi.status() == WL_CONNECTED) {
     return true;
   }
